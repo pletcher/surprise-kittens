@@ -1,6 +1,7 @@
 (ns surprise-kittens.server
   (:require [clojure.java.io :as io]
             [clojure.string :as string]
+            [cognitect.transit :as transit]
             [compojure.core :refer [ANY GET PUT POST DELETE defroutes]]
             [compojure.route :refer [resources]]
             [ring.adapter.jetty :refer [run-jetty]]
@@ -8,18 +9,28 @@
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.logger :refer [wrap-with-logger]]
             [environ.core :refer [env]]
-            [image-resizer.core :refer [resize]]
-            [image-resizer.format :as format]
             [surprise-kittens.kittens :refer [kitten]])
+  (:import [java.io ByteArrayOutputStream])
   (:gen-class))
 
+(def ^:dynamic *string-encoding* "UTF-8")
+
+(defn write-str
+  "Writes a value to a string."
+  ([o type] (write-str o type {}))
+  ([o type opts]
+   (let [out (ByteArrayOutputStream.)
+         writer (transit/writer out type opts)]
+     (transit/write writer o)
+     (.toString out *string-encoding*))))
+
 (defn kitten-image []
-  (let [{:keys [link type]} (kitten)
-        short-type (last (string/split type #"/"))]
+  (let [{:keys [link]} (kitten)]
     {:status 200
-     :headers {"Content-Type" type}
-     :body (format/as-stream
-             (resize (io/input-stream link) 400 400) short-type)}))
+     :headers {"Content-Type" "application/transit+json"}
+     :body (write-str {:source "imgur"
+                       :link link}
+             :json)}))
 
 (defroutes routes
   (GET "/" _
