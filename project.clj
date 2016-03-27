@@ -1,6 +1,6 @@
-(defproject surprise-kittens "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+(defproject surprise-kittens "0.1.0"
+  :description "Surprise! Kittens!"
+  :url "http://surprisekittens.com"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
@@ -12,10 +12,13 @@
                  [ring.middleware.logger "0.5.0"]
                  [compojure "1.5.0"]
                  [environ "1.0.2"]
-                 [org.omcljs/om "1.0.0-alpha31"]]
+                 [org.omcljs/om "1.0.0-alpha31"]
+                 [cheshire "5.5.0"]
+                 [clj-http "2.1.0"]
+                 [image-resizer "0.1.9"]]
 
-  :plugins [[lein-cljsbuild "1.1.1"]
-            [lein-environ "1.0.1"]]
+  :plugins [[lein-cljsbuild "1.1.3"]
+            [lein-environ "1.0.2"]]
 
   :min-lein-version "2.6.1"
 
@@ -85,22 +88,22 @@
 
   :doo {:build "test"}
 
-  :profiles {:dev
-             {:dependencies [[figwheel "0.5.1"]
-                             [figwheel-sidecar "0.5.1"]
-                             [com.cemerick/piggieback "0.2.1"]
-                             [org.clojure/tools.nrepl "0.2.12"]]
+  :profiles {:default [:base :system :user :provided :dev :local-dev]
+             :dev {:dependencies [[figwheel "0.5.1"]
+                                  [figwheel-sidecar "0.5.1"]
+                                  [com.cemerick/piggieback "0.2.1"]
+                                  [org.clojure/tools.nrepl "0.2.12"]]
 
-              :plugins [[lein-figwheel "0.5.1"]
-                        [lein-doo "0.1.6"]]
+                   :plugins [[lein-figwheel "0.5.1"]
+                             [lein-doo "0.1.6"]]
 
-              :cljsbuild {:builds
-                          {:test
-                           {:source-paths ["src/cljs" "test/cljs"]
-                            :compiler
-                            {:output-to "resources/public/js/compiled/testable.js"
-                             :main surprise-kittens.test-runner
-                             :optimizations :none}}}}}
+                   :cljsbuild {:builds
+                               {:test
+                                {:source-paths ["src/cljs" "test/cljs"]
+                                 :compiler
+                                 {:output-to "resources/public/js/compiled/testable.js"
+                                  :main surprise-kittens.test-runner
+                                  :optimizations :none}}}}}
 
              :uberjar
              {:source-paths ^:replace ["src/clj"]

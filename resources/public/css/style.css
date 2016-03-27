@@ -1,3 +1,39 @@
-h1 {
-  text-decoration: underline;
+@import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700,900);
+
+html, body {
+  background-color: #fafafa;
+  color: #b35445;
+  font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+}
+
+img {
+  max-height: 400px;
+}
+
+.rounded {
+  border-radius: 4px;
+}
+
+.shadowed {
+  -moz-box-shadow: 3px 3px 5px 1px #ccc;
+  -webkit-box-shadow: 3px 3px 5px 1px #ccc;
+  box-shadow: 3px 3px 5px 1px #ccc;
+}
+
+@media (max-width: 480px) {
+  #app {
+    margin: 0 auto;
+    width: 480px;
+  }
+}
+
+@media (min-width: 481px) {
+  #app {
+    margin: 0 auto;
+    width: 800px;
+  }
 }

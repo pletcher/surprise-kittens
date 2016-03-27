@@ -1,18 +1,20 @@
 (ns surprise-kittens.core
-  (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]))
+  (:require [goog.dom :as gdom]
+            [om.next :as om :refer-macros [defui]]
+            [om.dom :as dom]))
 
 (enable-console-print!)
 
 (defonce app-state (atom {:text "Hello Chestnut!"}))
 
-(defn root-component [app owner]
-  (reify
-    om/IRender
-    (render [_]
-      (dom/div nil (dom/h1 nil (:text app))))))
+(defui Root
+  Object
+  (render [this]
+    (dom/div #js {:style #js {:textAlign "center"}}
+      (dom/h1 nil "Surprise! Kittens!")
+      (dom/img #js {:className "rounded shadowed"
+                    :src "/kittens/random"}))))
 
-(om/root
- root-component
- app-state
- {:target (js/document.getElementById "app")})
+(def root (om/factory Root))
+
+(js/ReactDOM.render (root) (gdom/getElement "app"))
