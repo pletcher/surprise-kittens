@@ -25,12 +25,9 @@
      (.toString out *string-encoding*))))
 
 (defn kitten-image []
-  (let [{:keys [link]} (kitten)]
-    {:status 200
-     :headers {"Content-Type" "application/transit+json"}
-     :body (write-str {:source "imgur"
-                       :link link}
-             :json)}))
+  {:status 200
+   :headers {"Content-Type" "application/transit+json"}
+   :body (write-str (kitten) :json)})
 
 (defroutes routes
   (GET "/" _

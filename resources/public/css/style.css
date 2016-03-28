@@ -6,12 +6,20 @@ html, body {
   font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
 }
 
+a {
+  color: #b35445;
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
 }
 
 img {
   max-height: 400px;
+}
+
+.clickable {
+  cursor: pointer;
 }
 
 .rounded {
@@ -29,11 +37,19 @@ img {
     margin: 0 auto;
     width: 480px;
   }
+
+  img {
+    max-width: 480px;
+  }
 }
 
 @media (min-width: 481px) {
   #app {
     margin: 0 auto;
     width: 800px;
+  }
+
+  img {
+    max-width: 800px;
   }
 }

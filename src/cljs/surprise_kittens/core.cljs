@@ -7,10 +7,9 @@
             [om.next :as om :refer-macros [defui]]
             [om.dom :as dom]))
 
-(enable-console-print!)
+;; (enable-console-print!)
 
-(defonce app-state (atom {:link "img/cat-1209743_1920.jpg"
-                          :request-count 0}))
+(defonce app-state (atom {:kitten {:link "img/cat-1209743_1920.jpg"}}))
 (defonce kitten-url "/kittens/random")
 
 (defn GET [url cb]
@@ -24,24 +23,37 @@
 (defui Root
   static om/IQuery
   (query [this]
-    '[:link])
+    '[:kitten])
   Object
+  (componentDidMount [this]
+    (GET kitten-url
+      #(om/transact! this `[(kitten/change ~%)])))
   (render [this]
-    (dom/div #js {:onClick (fn [e]
-                             (GET "/kittens/random"
-                               #(om/transact! this `[(kitten/change ~%)])))
-                  :style #js {:textAlign "center"}}
-      (dom/h1 nil "Surprise! Kittens!")
-      (dom/img #js {:className "rounded shadowed"
-                    :src (:link (om/props this))}))))
+    (let [kitten (:kitten (om/props this))
+          {:keys [link title]} kitten]
+      (dom/div #js {:onClick (fn [e]
+                              (GET kitten-url
+                                #(om/transact! this `[(kitten/change ~%)])))
+                   :style #js {:textAlign "center"}}
+       (dom/h1 nil "Surprise! Kittens!")
+       (dom/img #js {:className "clickable rounded shadowed"
+                     :src link})
+       (dom/a #js {:href link :title title}
+         (dom/h4 nil title))
+       (dom/small nil "Made with <3 for Sofia")))))
 
-(defn mutate [{:keys [state] :as env} key params]
-  (if (= 'kitten/change key)
-    {:value {:keys [:link]}
-     :action #(swap! state assoc :link (:link params))}
-    {:value :not-found}))
+(defmulti mutate om/dispatch)
 
-(defmulti read (fn [env key params] key))
+(defmethod mutate :default
+  [env key params]
+  env)
+
+(defmethod mutate 'kitten/change
+  [{:keys [state] :as env} _ params]
+  {:value {:keys [:kitten]}
+   :action #(swap! state assoc :kitten params)})
+
+(defmulti read om/dispatch)
 
 (defmethod read :default
   [{:keys [state] :as env} key params]
