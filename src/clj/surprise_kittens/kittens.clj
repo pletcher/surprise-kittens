@@ -45,7 +45,7 @@
         (recur (vec-remove col i))))))
 
 (defn kitten
-  "Initiates the request for getting a kitten image"
+  "Initiates request for getting a kitten image"
   []
   (let [ai (sample not-nsfw (albums-and-images))]
     (if (:is_album ai)

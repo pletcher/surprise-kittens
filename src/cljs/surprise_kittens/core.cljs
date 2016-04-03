@@ -1,6 +1,5 @@
 (ns surprise-kittens.core
-  (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [cljs.core.async :refer [<! >! put! chan]]
+  (:require [clojure.string :as string]
             [cognitect.transit :as transit]
             [goog.dom :as gdom]
             [goog.net.XhrIo :as xhr]
@@ -20,6 +19,44 @@
     "GET" nil
     #js {"Accept" "application/transit+json"}))
 
+(defn medium-image-url [url]
+  (let [dot-index (string/last-index-of url ".")]
+    (str (subs url 0 dot-index) "m" (subs url dot-index))))
+
+(defn image [kitten]
+  (if-let [webm (:webm kitten)]
+    (dom/video #js {:autoPlay "autoplay"
+                    :className "clickable rounded shadowed"
+                    :height (:height kitten)
+                    :loop "loop"
+                    :muted "muted"}
+      (dom/source #js {:src webm})
+      (dom/source #js {:src (:mp4 kitten)}))
+    (dom/img #js {:className "clickable rounded shadowed"
+                  :src (medium-image-url (:link kitten))})))
+
+(defn tweet-url [link]
+  (str "https://twitter.com/intent/tweet?text="
+    (js/encodeURIComponent "Surprise! Kittens! ")
+    (js/encodeURIComponent link)
+    (js/encodeURIComponent " from http://surprisekittens.com")))
+
+(defui SocialBox
+  static om/IQuery
+  (query [this]
+    '[:link])
+  Object
+  (render [this]
+    (let [link (:link (om/props this))]
+      (dom/div nil
+        (dom/h3 nil
+          (dom/a #js {:href (tweet-url link)
+                      :target "_blank"
+                      :title "Share"}
+           "Tweet this kitten!"))))))
+
+(def social-box (om/factory SocialBox))
+
 (defui Root
   static om/IQuery
   (query [this]
@@ -29,17 +66,18 @@
     (GET kitten-url
       #(om/transact! this `[(kitten/change ~%)])))
   (render [this]
-    (let [kitten (:kitten (om/props this))
+    (let [{:keys [kitten] :as props} (om/props this)
           {:keys [link title]} kitten]
       (dom/div #js {:style #js {:textAlign "center"}}
         (dom/h1 nil "Surprise! Kittens!")
-        (dom/img #js {:className "clickable rounded shadowed"
-                      :onClick (fn [e]
+        (dom/div #js {:onClick (fn [e]
                                  (GET kitten-url
                                    #(om/transact! this `[(kitten/change ~%)])))
-                      :src link})
+                      :style #js {:width "100%"}}
+          (image kitten))
         (dom/a #js {:href link :title title}
           (dom/h4 nil (or title link)))
+        (social-box kitten)
         (dom/small nil "Made with <3 for S.")))))
 
 (defmulti mutate om/dispatch)
