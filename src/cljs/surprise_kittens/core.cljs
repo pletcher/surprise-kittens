@@ -32,15 +32,15 @@
     (let [kitten (:kitten (om/props this))
           {:keys [link title]} kitten]
       (dom/div #js {:style #js {:textAlign "center"}}
-       (dom/h1 nil "Surprise! Kittens!")
-       (dom/img #js {:className "clickable rounded shadowed"
-                     :onClick (fn [e]
-                                (GET kitten-url
-                                  #(om/transact! this `[(kitten/change ~%)])))
-                     :src link})
-       (dom/a #js {:href link :title title}
-         (dom/h4 nil title))
-       (dom/small nil "Made with <3 for S.")))))
+        (dom/h1 nil "Surprise! Kittens!")
+        (dom/img #js {:className "clickable rounded shadowed"
+                      :onClick (fn [e]
+                                 (GET kitten-url
+                                   #(om/transact! this `[(kitten/change ~%)])))
+                      :src link})
+        (dom/a #js {:href link :title title}
+          (dom/h4 nil (or title link)))
+        (dom/small nil "Made with <3 for S.")))))
 
 (defmulti mutate om/dispatch)
 
