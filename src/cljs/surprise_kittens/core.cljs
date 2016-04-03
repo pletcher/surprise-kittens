@@ -31,16 +31,16 @@
   (render [this]
     (let [kitten (:kitten (om/props this))
           {:keys [link title]} kitten]
-      (dom/div #js {:onClick (fn [e]
-                              (GET kitten-url
-                                #(om/transact! this `[(kitten/change ~%)])))
-                   :style #js {:textAlign "center"}}
+      (dom/div #js {:style #js {:textAlign "center"}}
        (dom/h1 nil "Surprise! Kittens!")
        (dom/img #js {:className "clickable rounded shadowed"
+                     :onClick (fn [e]
+                                (GET kitten-url
+                                  #(om/transact! this `[(kitten/change ~%)])))
                      :src link})
        (dom/a #js {:href link :title title}
          (dom/h4 nil title))
-       (dom/small nil "Made with <3 for Sofia")))))
+       (dom/small nil "Made with <3 for S.")))))
 
 (defmulti mutate om/dispatch)
 

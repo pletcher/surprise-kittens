@@ -16,6 +16,7 @@ h1, h2, h3, h4, h5, h6 {
 
 img {
   max-height: 400px;
+  max-width: 100%;
 }
 
 .clickable {
@@ -27,29 +28,21 @@ img {
 }
 
 .shadowed {
-  -moz-box-shadow: 3px 3px 5px 1px #ccc;
-  -webkit-box-shadow: 3px 3px 5px 1px #ccc;
-  box-shadow: 3px 3px 5px 1px #ccc;
+  -moz-box-shadow: 0 3px 8px 1px #ccc;
+  -webkit-box-shadow: 0 3px 8px 1px #ccc;
+  box-shadow: 0 3px 8px 1px #ccc;
 }
 
 @media (max-width: 480px) {
   #app {
     margin: 0 auto;
-    width: 480px;
-  }
-
-  img {
-    max-width: 480px;
+    width: 100%;
   }
 }
 
 @media (min-width: 481px) {
   #app {
     margin: 0 auto;
-    width: 800px;
-  }
-
-  img {
-    max-width: 800px;
+    width: 100%;
   }
 }

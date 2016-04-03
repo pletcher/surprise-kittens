@@ -90,23 +90,22 @@
 
   :doo {:build "test"}
 
-  :profiles {:default [:base :system :user :provided :dev :local-dev]
-             :dev {:dependencies [[figwheel "0.5.1"]
-                                  [figwheel-sidecar "0.5.1"]
-                                  [com.cemerick/piggieback "0.2.1"]
-                                  [org.clojure/tools.nrepl "0.2.12"]]
+  :profiles {:dev [:local-dev
+                   {:dependencies [[figwheel "0.5.1"]
+                                   [figwheel-sidecar "0.5.1"]
+                                   [com.cemerick/piggieback "0.2.1"]
+                                   [org.clojure/tools.nrepl "0.2.12"]]
 
-                   :plugins [[lein-figwheel "0.5.1"]
+                    :plugins [[lein-figwheel "0.5.1"]
                              [lein-doo "0.1.6"]]
 
-                   :cljsbuild {:builds
-                               {:test
-                                {:source-paths ["src/cljs" "test/cljs"]
-                                 :compiler
-                                 {:output-to "resources/public/js/compiled/testable.js"
-                                  :main surprise-kittens.test-runner
-                                  :optimizations :none}}}}}
-
+                    :cljsbuild {:builds
+                                {:test
+                                 {:source-paths ["src/cljs" "test/cljs"]
+                                  :compiler
+                                  {:output-to "resources/public/js/compiled/testable.js"
+                                   :main surprise-kittens.test-runner
+                                   :optimizations :none}}}}}]
              :uberjar
              {:source-paths ^:replace ["src/clj"]
               :hooks [leiningen.cljsbuild]
