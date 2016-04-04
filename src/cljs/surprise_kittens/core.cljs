@@ -24,23 +24,21 @@
     (str (subs url 0 dot-index) "m" (subs url dot-index))))
 
 (defn image [kitten]
-  (if-let [webm (:webm kitten)]
+  (if (:animated kitten)
     (dom/video #js {:autoPlay "autoplay"
                     :className "clickable rounded shadowed"
                     :height (:height kitten)
                     :loop "loop"
                     :muted "muted"}
-      (dom/source #js {:src webm})
+      (dom/source #js {:src (:webm kitten)})
       (dom/source #js {:src (:mp4 kitten)}))
     (dom/img #js {:className "clickable rounded shadowed"
                   :src (medium-image-url (:link kitten))})))
 
 (defn tweet-url [link]
-  (str "https://twitter.com/intent/tweet?text="
+  (str "https://twitter.com/intent/tweet?via=srprisekittens&text="
     (js/encodeURIComponent "Surprise! Kittens! ")
-    (js/encodeURIComponent link)
-    (js/encodeURIComponent " from http://surprisekittens.com")
-    "&via=sprisekittens"))
+    (js/encodeURIComponent link)))
 
 (defn tweet-button [link]
   (dom/a #js {:className "twitter-share-button"
