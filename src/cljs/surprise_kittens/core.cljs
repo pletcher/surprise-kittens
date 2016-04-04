@@ -39,7 +39,18 @@
   (str "https://twitter.com/intent/tweet?text="
     (js/encodeURIComponent "Surprise! Kittens! ")
     (js/encodeURIComponent link)
-    (js/encodeURIComponent " from http://surprisekittens.com")))
+    (js/encodeURIComponent " from http://surprisekittens.com")
+    "&via=sprisekittens"))
+
+(defn tweet-button [link]
+  (dom/a #js {:className "twitter-share-button"
+              :href (tweet-url link)
+              :style #js {:textDecoration "none"}
+              :target "_blank"
+              :title "Tweet this kitten!"}
+    (dom/span nil
+      (dom/span #js {:className "fa fa-twitter-square"})
+      (dom/span nil " Tweet this kitten!"))))
 
 (defui SocialBox
   static om/IQuery
@@ -49,11 +60,7 @@
   (render [this]
     (let [link (:link (om/props this))]
       (dom/div nil
-        (dom/h3 nil
-          (dom/a #js {:href (tweet-url link)
-                      :target "_blank"
-                      :title "Share"}
-           "Tweet this kitten!"))))))
+        (dom/h3 nil (tweet-button link))))))
 
 (def social-box (om/factory SocialBox))
 
