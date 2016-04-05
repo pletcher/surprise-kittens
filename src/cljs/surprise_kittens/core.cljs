@@ -4,11 +4,14 @@
             [goog.dom :as gdom]
             [goog.net.XhrIo :as xhr]
             [om.next :as om :refer-macros [defui]]
-            [om.dom :as dom]))
+            [om.dom :as dom]
+            [surprise-kittens.lib.local-storage :as local-storage]))
 
-;; (enable-console-print!)
+(if goog.DEBUG
+  (enable-console-print!))
 
-(defonce app-state (atom {:kitten {:link "img/cat-1209743_1920.jpg"}}))
+(defonce app-state (atom {:kitten {:hearted false
+                                   :link "img/cat-1209743_1920.jpg"}}))
 (defonce kitten-url "/kittens/random")
 
 (defn GET [url cb]
@@ -35,37 +38,55 @@
     (dom/img #js {:className "clickable rounded shadowed"
                   :src (medium-image-url (:link kitten))})))
 
-(defn tweet-url [link]
-  (str "https://twitter.com/intent/tweet?via=srprisekittens&text="
+(defn tweet-text [link]
+  (str
     (js/encodeURIComponent "Surprise! Kittens! ")
-    (js/encodeURIComponent link)))
+    (js/encodeURIComponent link)
+    (js/encodeURIComponent " via @srprisekittens")))
+
+(defn tweet-deep-url [link]
+  (str "twitter://post?message=" (tweet-text link)))
+
+(defn tweet-url [link]
+  (str "https://twitter.com/intent/tweet?text=" (tweet-text link)))
 
 (defn tweet-button [link]
   (dom/a #js {:className "twitter-share-button"
-              :href (tweet-url link)
+              :href (tweet-deep-url link)
               :style #js {:textDecoration "none"}
               :target "_blank"
               :title "Tweet this kitten!"}
     (dom/span nil
-      (dom/span #js {:className "fa fa-twitter-square"})
-      (dom/span nil " Tweet this kitten!"))))
+      (dom/span #js {:className "fa fa-twitter-square"}))))
 
 (defui SocialBox
   static om/IQuery
   (query [this]
-    '[:link])
+    [:hearted :id :link])
   Object
   (render [this]
-    (let [link (:link (om/props this))]
-      (dom/div nil
-        (dom/h3 nil (tweet-button link))))))
+    (let [{:keys [hearted id link] :as props} (om/props this)]
+      (dom/div #js {:style #js {:fontSize 36}}
+        (dom/span #js {:className "px1"}
+          (dom/span nil (tweet-button link)))
+        (dom/span #js {:className "px1"}
+          (dom/span #js {:className
+                         (str "clickable "
+                           (if hearted
+                             "fa fa-heart"
+                             "fa fa-heart-o"))
+                         :onClick
+                         (fn []
+                           (if hearted
+                             (om/transact! this `[(kitten/unheart {:id ~id})])
+                             (om/transact! this `[(kitten/heart {:id ~id})])))}))))))
 
 (def social-box (om/factory SocialBox))
 
 (defui Root
   static om/IQuery
   (query [this]
-    '[:kitten])
+    [{:kitten (om/get-query SocialBox)}])
   Object
   (componentDidMount [this]
     (GET kitten-url
@@ -83,7 +104,8 @@
         (dom/a #js {:href link :title title}
           (dom/h4 nil (or title link)))
         (social-box kitten)
-        (dom/small nil "Made with <3 for S.")))))
+        (dom/div #js {:className "py4"}
+          (dom/small nil "Made with <3 for S."))))))
 
 (defmulti mutate om/dispatch)
 
@@ -92,9 +114,22 @@
   env)
 
 (defmethod mutate 'kitten/change
-  [{:keys [state] :as env} _ params]
+  [{:keys [state] :as env} _ {:keys [id] :as params}]
   {:value {:keys [:kitten]}
-   :action #(swap! state assoc :kitten params)})
+   :action #(swap! state assoc :kitten
+              (assoc params :hearted (local-storage/get-item id)))})
+
+(defmethod mutate `kitten/heart
+  [{:keys [state] :as env} _ {:keys [id] :as params}]
+  {:action (fn []
+             (local-storage/set-item! id true)
+             (swap! state assoc-in [:kitten :hearted] true))})
+
+(defmethod mutate 'kitten/unheart
+  [{:keys [state] :as env} _ {:keys [id] :as params}]
+  {:action (fn []
+             (local-storage/remove-item! id)
+             (swap! state assoc-in [:kitten :hearted] false))})
 
 (defmulti read om/dispatch)
 
@@ -105,10 +140,15 @@
       {:value value}
       {:value :not-found})))
 
+(def parser-and-state
+  {:parser (om/parser {:mutate mutate
+                       :read read})
+   :state app-state})
+
 (def reconciler
-  (om/reconciler {:parser (om/parser {:mutate mutate
-                                      :read read})
-                  :state app-state}))
+  (om/reconciler (if goog.DEBUG
+                   parser-and-state
+                   (assoc parser-and-state :logger nil))))
 
 (om/add-root! reconciler
   Root (gdom/getElement "app"))

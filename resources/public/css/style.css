@@ -23,6 +23,62 @@ img, video {
   cursor: pointer;
 }
 
+.mt1 {
+  margin-top: 0.5rem;
+}
+
+.mt2 {
+  margin-top: 1rem;
+}
+
+.mt3 {
+  margin-top: 2rem;
+}
+
+.mt4 {
+  margin-top: 4rem;
+}
+
+.px1 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.px2 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.px3 {
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.px4 {
+  padding-left: 4rem;
+  padding-right: 4rem;
+}
+
+.py1 {
+  padding-bottom: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+.py2 {
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.py3 {
+  padding-bottom: 2rem;
+  padding-top: 2rem;
+}
+
+.py4 {
+  padding-bottom: 4rem;
+  padding-top: 4rem;
+}
+
 .rounded {
   border-radius: 4px;
 }

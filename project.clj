@@ -115,5 +115,6 @@
                           {:app
                            {:source-paths ^:replace ["src/cljs"]
                             :compiler
-                            {:optimizations :advanced
+                            {:closure-defines {"goog.DEBUG" false}
+                             :optimizations :advanced
                              :pretty-print false}}}}}})
