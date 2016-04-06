@@ -103,7 +103,8 @@
                                 {:test
                                  {:source-paths ["src/cljs" "test/cljs"]
                                   :compiler
-                                  {:output-to "resources/public/js/compiled/testable.js"
+                                  {:closure-defines {"goog.DEBUG" true}
+                                   :output-to "resources/public/js/compiled/testable.js"
                                    :main surprise-kittens.test-runner
                                    :optimizations :none}}}}}]
              :uberjar

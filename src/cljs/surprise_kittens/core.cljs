@@ -32,7 +32,8 @@
                     :className "clickable rounded shadowed"
                     :height (:height kitten)
                     :loop "loop"
-                    :muted "muted"}
+                    :muted "muted"
+                    :src (:webm kitten)}
       (dom/source #js {:src (:webm kitten)})
       (dom/source #js {:src (:mp4 kitten)}))
     (dom/img #js {:className "clickable rounded shadowed"
