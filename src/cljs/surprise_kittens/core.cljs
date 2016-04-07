@@ -33,7 +33,7 @@
                     :height (:height kitten)
                     :loop "loop"
                     :muted "muted"
-                    :src (:webm kitten)}
+                    :data-link (:link kitten)}
       (dom/source #js {:src (:webm kitten)})
       (dom/source #js {:src (:mp4 kitten)}))
     (dom/img #js {:className "clickable rounded shadowed"
@@ -43,7 +43,7 @@
   (str
     (js/encodeURIComponent "Surprise! Kittens! ")
     (js/encodeURIComponent link)
-    (js/encodeURIComponent " via @srprisekittens")))
+    (js/encodeURIComponent " via @sprisekittens")))
 
 (defn tweet-deep-url [link]
   (str "twitter://post?message=" (tweet-text link)))
