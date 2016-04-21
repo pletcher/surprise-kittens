@@ -13,23 +13,21 @@
                  [com.cognitect/transit-clj "0.8.285"]
                  [com.cognitect/transit-cljs "0.8.237"]
                  [compojure "1.5.0"]
+                 [crypto-password "0.2.0"]
                  [environ "1.0.2"]
                  [org.omcljs/om "1.0.0-alpha31"]
+                 [org.postgresql/postgresql "9.4-1201-jdbc41"]
+                 [ragtime "0.5.3"]
                  [ring "1.4.0"]
                  [ring.middleware.logger "0.5.0"]
-                 [ring/ring-defaults "0.2.0"]]
-
+                 [ring/ring-defaults "0.2.0"]
+                 [yesql "0.5.2"]]
   :plugins [[lein-cljsbuild "1.1.3"]
             [lein-environ "1.0.2"]]
-
   :min-lein-version "2.6.1"
-
   :source-paths ["src/clj" "src/cljs" "dev"]
-
   :test-paths ["test/clj"]
-
   :clean-targets ^{:protect false} [:target-path :compile-path "resources/public/js"]
-
   :uberjar-name "surprise-kittens.jar"
 
   ;; Use `lein run` if you just want to start a HTTP server, without figwheel
@@ -39,7 +37,6 @@
   ;; because that's where our development helper functions like (run) and
   ;; (browser-repl) live.
   :repl-options {:init-ns user}
-
   :cljsbuild {:builds
               {:app
                {:source-paths ["src/cljs"]
@@ -58,7 +55,6 @@
   ;; stanza, but it will read it without passing through leiningen's profile
   ;; merging. So don't put a :figwheel section under the :dev profile, it will
   ;; not be picked up, instead configure figwheel here on the top level.
-
   :figwheel {;; :http-server-root "public"       ;; serve static assets from resources/public/
              ;; :server-port 3449                ;; default
              ;; :server-ip "127.0.0.1"           ;; default
@@ -87,9 +83,9 @@
              ;; :open-file-command "myfile-opener"
 
              :server-logfile "log/figwheel.log"}
-
+  :aliases {"migrate" ["run" "-m" "surprise-kittens.migrations/migrate"]
+            "rollback" ["run" "-m" "surprise-kittens.migrations/rollback"]}
   :doo {:build "test"}
-
   :profiles {:dev [:local-dev
                    {:dependencies [[figwheel "0.5.1"]
                                    [figwheel-sidecar "0.5.1"]
