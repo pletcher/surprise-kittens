@@ -33,7 +33,7 @@
                     :height (:height kitten)
                     :loop "loop"
                     :muted "muted"
-                    :data-link (:link kitten)}
+                    :src (:mp4 kitten)}
       (dom/source #js {:src (:webm kitten)})
       (dom/source #js {:src (:mp4 kitten)}))
     (dom/img #js {:className "clickable rounded shadowed"
@@ -84,6 +84,24 @@
 
 (def social-box (om/factory SocialBox))
 
+(defui AuthenticationForm
+  Object
+  (render [this]
+    (dom/div nil
+      (dom/div nil
+       (dom/label nil "Email address")
+       (dom/input nil))
+      (dom/div nil
+        (dom/label nil "Username")
+        (dom/input nil))
+      (dom/div nil
+        (dom/label nil "Password")
+        (dom/input nil))
+      (dom/div nil
+        (dom/a nil "Submit")))))
+
+(def authentication-form (om/factory AuthenticationForm))
+
 (defui Root
   static om/IQuery
   (query [this]
@@ -105,6 +123,8 @@
         (dom/a #js {:href link :title title}
           (dom/h4 nil (or title link)))
         (social-box kitten)
+        #_(dom/div #js {:className "py2"}
+          (authentication-form))
         (dom/div #js {:className "py4"}
           (dom/small nil "Made with <3 for S."))))))
 
