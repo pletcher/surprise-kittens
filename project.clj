@@ -7,6 +7,7 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.7.228" :scope "provided"]
                  [org.clojure/core.async "0.2.374"]
+                 [org.clojure/java.jdbc "0.5.8"]
                  [bk/ring-gzip "0.1.1"]
                  [cheshire "5.5.0"]
                  [clj-http "2.1.0"]
@@ -103,6 +104,7 @@
                                    :output-to "resources/public/js/compiled/testable.js"
                                    :main surprise-kittens.test-runner
                                    :optimizations :none}}}}}]
+             :test [:dev :local-test]
              :uberjar
              {:source-paths ^:replace ["src/clj"]
               :hooks [leiningen.cljsbuild]
