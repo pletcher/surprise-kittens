@@ -9,20 +9,30 @@
             [ring.middleware.gzip :refer [wrap-gzip]]
             [ring.middleware.logger :refer [wrap-with-logger]]
             [environ.core :refer [env]]
-            [surprise-kittens.kittens :refer [kitten]])
+            [surprise-kittens.kittens :refer [kitten]]
+            [surprise-kittens.parser :refer [parser]])
   (:import [java.io ByteArrayOutputStream])
   (:gen-class))
 
-(def ^:dynamic *string-encoding* "UTF-8")
+(defn read-transit
+  [t]
+  (let [reader (transit/reader t :json {})]
+    (transit/read reader)))
 
 (defn write-str
-  "Writes a value to a string."
+  "Writes a transit value to a string."
   ([o type] (write-str o type {}))
   ([o type opts]
    (let [out (ByteArrayOutputStream.)
          writer (transit/writer out type opts)]
      (transit/write writer o)
-     (.toString out *string-encoding*))))
+     (.toString out "UTF-8"))))
+
+(defn handle-query [req q]
+  (let [query (read-transit q)]
+    {:status 200
+     :headers {"Content-Type" "application/transit+json"}
+     :body (write-str (parser req query) :json)}))
 
 (defn kitten-image []
   {:status 200
@@ -36,6 +46,11 @@
      :body (io/input-stream (io/resource "public/index.html"))})
   (GET "/kittens/random" _
     (kitten-image))
+  (POST "/query" req
+    (if-let [body (get req :body)]
+      (handle-query req body)
+      {:status 400
+       :body (write-str {:error "Invalid query"} :json)}))
   (resources "/"))
 
 (def http-handler

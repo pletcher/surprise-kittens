@@ -38,16 +38,19 @@
   "Returns an element from `v` if `f` returns `true` for the element"
   [f v]
   (loop [col v]
-    (let [el (rand-nth col)
-          i (.indexOf col el)]
-      (if (f el)
-        el
-        (recur (vec-remove col i))))))
+    (if-not (empty? col)
+      (let [el (rand-nth col)
+            i (.indexOf col el)]
+        (if (f el)
+          el
+          (recur (vec-remove col i)))))))
 
 (defn kitten
   "Initiates request for getting a kitten image"
   []
-  (let [ai (sample not-nsfw (albums-and-images))]
-    (if (:is_album ai)
-      (sample not-nsfw (images (:id ai)))
-      ai)))
+  (loop [album (sample not-nsfw (albums-and-images))]
+    (if (nil? album)
+      (recur (sample not-nsfw (albums-and-images)))
+      (if (:is_album album)
+        (sample not-nsfw (images (:id album)))
+        album))))
