@@ -3,7 +3,7 @@
             [environ.core :refer [env]]
             [yesql.core :refer [defqueries]]))
 
-(defqueries "surprise_kittens/sql/users.sql"
+(defqueries "sql/users.sql"
   {:connection (env :database-url)})
 
 (defn email? [s]
