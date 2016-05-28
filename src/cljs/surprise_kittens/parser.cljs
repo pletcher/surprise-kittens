@@ -9,10 +9,10 @@
   env)
 
 (defmethod mutate 'kitten/change
-  [{:keys [state] :as env} _ {:keys [id] :as params}]
-  {:value {:keys [:kitten]}
-   :action #(swap! state assoc :kitten
-              (assoc params :hearted (local-storage/get-item id)))})
+  [{:keys [ast state] :as env} _ _]
+  {:action #(swap! state assoc-in [:kitten :loading] true)
+   :remote (assoc-in ast [:params :id] (om/tempid))
+   :value {:keys [:kitten]}})
 
 (defmethod mutate 'kitten/heart
   [{:keys [state] :as env} _ {:keys [id] :as params}]
@@ -55,6 +55,10 @@
   {:value (get @state k {:logged-in false})})
 
 (defmethod read :kitten
-  [{:keys [state]} k _]
-  {:value (get @state k {:hearted false
-                         :link "img/cat-1209743_1920.jpg"})})
+  [{:keys [query state] :as env} k _]
+  (let [st @state]
+    {:value (get-in st ['kitten/change :result]
+              {:id :temp
+               :hearted false
+               :link "img/cat-1209743_1920.jpg"
+               :loading false})}))

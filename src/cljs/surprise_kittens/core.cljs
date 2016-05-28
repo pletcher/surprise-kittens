@@ -15,8 +15,9 @@
 (defonce kitten-url "/kittens/random")
 
 (defn medium-image-url [url]
-  (let [dot-index (string/last-index-of url ".")]
-    (str (subs url 0 dot-index) "m" (subs url dot-index))))
+  (when url
+    (let [dot-index (string/last-index-of url ".")]
+      (str (subs url 0 dot-index) "m" (subs url dot-index)))))
 
 (defn image [kitten]
   (if (:animated kitten)
@@ -54,35 +55,39 @@
 
 (defui Kitten
   static om/Ident
-  (ident [_ {:keys [id]}]
+  (ident [_ {:keys [id] :or {id :temp}}]
     [:kitten/by-id id])
   static om/IQuery
   (query [this]
-    [:hearted :id :link :title])
+    [:hearted :id :link :loading :title])
   Object
+  (componentDidMount [this]
+    (om/transact! this `[(kitten/change)]))
   (render [this]
-    (let [{:keys [hearted id link title] :as kitten} (om/props this)]
-      (dom/div #js {:style #js {:fontSize 36}}
-        (dom/div #js {:onClick (fn [e]
-                                 (util/transit-get kitten-url
-                                   #(om/transact! this `[(kitten/change ~%)])))
-                      :style #js {:width "100%"}}
-          (image kitten))
-        (dom/a #js {:href link :title title}
-          (dom/h4 nil (or title link)))
-        (dom/span #js {:className "px1"}
-          (dom/span nil (tweet-button link)))
-        (dom/span #js {:className "px1"}
-          (dom/span #js {:className
-                         (str "clickable "
-                           (if hearted
-                             "fa fa-heart"
-                             "fa fa-heart-o"))
-                         :onClick
-                         (fn []
-                           (if hearted
-                             (om/transact! this `[(kitten/unheart {:id ~id})])
-                             (om/transact! this `[(kitten/heart {:id ~id})])))}))))))
+    (let [{:keys [hearted id link loading title] :as kitten} (om/props this)]
+      (if loading
+        (dom/div nil
+          (dom/h2 nil "Loading..."))
+        (dom/div #js {:style #js {:fontSize 36}}
+          (dom/div #js {:onClick (fn [e]
+                                   (om/transact! this `[(kitten/change)]))
+                       :style #js {:width "100%"}}
+            (image kitten))
+          (dom/a #js {:href link :title title}
+            (dom/h4 nil (or title link)))
+          (dom/span #js {:className "px1"}
+            (dom/span nil (tweet-button link)))
+          (dom/span #js {:className "px1"}
+            (dom/span #js {:className
+                           (str "clickable "
+                             (if hearted
+                               "fa fa-heart"
+                               "fa fa-heart-o"))
+                           :onClick
+                           (fn []
+                             (if hearted
+                               (om/transact! this `[(kitten/unheart {:id ~id})])
+                               (om/transact! this `[(kitten/heart {:id ~id})])))})))))))
 
 (def kitten-factory (om/factory Kitten))
 
@@ -136,9 +141,6 @@
     [{:current-user (om/get-query AuthenticationForm)}
      {:kitten (om/get-query Kitten)}])
   Object
-  (componentDidMount [this]
-    (util/transit-get kitten-url
-      #(om/transact! this `[(kitten/change ~%)])))
   (render [this]
     (let [{:keys [kitten current-user] :as props} (om/props this)]
       (dom/div #js {:style #js {:textAlign "center"}}
@@ -154,7 +156,8 @@
 
 (def reconciler-cfg
   (merge
-    {:parser (om/parser
+    {:id-key :id
+     :parser (om/parser
                {:mutate parser/mutate
                 :read parser/read})
      :send send-query
