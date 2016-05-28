@@ -146,7 +146,7 @@
       (dom/div #js {:style #js {:textAlign "center"}}
         (dom/h1 nil "Surprise! Kittens!")
         (kitten-factory kitten)
-        (authentication-form current-user)
+        (comment (authentication-form current-user))
         (dom/div #js {:className "py4"}
           (dom/small nil "Made with <3 for S."))))))
 
