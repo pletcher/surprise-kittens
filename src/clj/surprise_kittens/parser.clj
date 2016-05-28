@@ -10,9 +10,8 @@
 
 (defmethod mutate 'user/sign-up
   [env k params]
-  ;; just create the user and log in!
-  (println params)
-  params)
+  {:action #(dissoc (user/create-user params) :password)
+   :value {:keys [:current-user]}})
 
 (defmulti readf om/dispatch)
 
