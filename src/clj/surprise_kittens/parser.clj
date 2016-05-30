@@ -6,7 +6,7 @@
 (defmulti mutate om/dispatch)
 
 (defmethod mutate 'kitten/change
-  [_ _ _]
+  [env k params]
   {:action #(kitten)
    :value {:keys [:kitten]}})
 
@@ -14,16 +14,23 @@
   [env k params]
   env)
 
-(defmethod mutate 'user/sign-up
+(defmethod mutate 'user/authenticate
   [env k params]
   {:action #(dissoc (user/create-user params) :password)
    :value {:keys [:current-user]}})
 
+(defmethod mutate :default
+  [_ k _]
+  {:value {:error (str "No handler for mutation key " k)}})
+
 (defmulti readf om/dispatch)
 
 (defmethod readf :default
-  [env k params]
-  env)
+  [{:keys [state] :as env} k params]
+  (let [st @state]
+    (if-let [[_ value] (find st k)]
+      {:value value}
+      {:value :not-found})))
 
 (def parser (om/parser {:mutate mutate
                         :read readf}))

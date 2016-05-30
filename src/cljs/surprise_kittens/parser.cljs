@@ -11,7 +11,7 @@
 (defmethod mutate 'kitten/change
   [{:keys [ast state] :as env} _ _]
   {:action #(swap! state assoc-in [:kitten :loading] true)
-   :remote (assoc-in ast [:params :id] (om/tempid))
+   :remote ast
    :value {:keys [:kitten]}})
 
 (defmethod mutate 'kitten/heart
@@ -31,7 +31,7 @@
   {:action #(swap! state assoc-in [:current-user field] value)
    :value {:keys [:current-user]}})
 
-(defmethod mutate 'user/sign-up
+(defmethod mutate 'user/authenticate
   [{:keys [ast state] :as env} k params]
   {:action #(swap! state assoc :current-user {:logged-in true})
    :remote ast
@@ -51,14 +51,18 @@
   {:value (get @state k {})})
 
 (defmethod read :current-user
-  [{:keys [state] :as env} k params]
-  {:value (get @state k {:logged-in false})})
+  [{:keys [state] :as env} k _]
+  (let [st @state]
+    {:value (if-let [user (get-in st ['user/authenticate :result])]
+              (assoc user :logged-in true)
+              (get st k {:logged-in false}))}))
 
 (defmethod read :kitten
   [{:keys [query state] :as env} k _]
   (let [st @state]
     {:value (get-in st ['kitten/change :result]
-              {:id :temp
-               :hearted false
-               :link "img/cat-1209743_1920.jpg"
-               :loading false})}))
+              (get st k
+                {:id :temp
+                 :hearted false
+                 :link "img/cat-1209743_1920.jpg"
+                 :loading false}))}))

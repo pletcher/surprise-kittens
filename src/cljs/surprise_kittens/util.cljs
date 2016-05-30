@@ -7,7 +7,7 @@
   (xhr/send url
     (fn [e]
       (this-as this
-        (cb (transit/read (om/reader) (.getResponseText this)))))
+        (cb (transit/read (om/reader) (.getResponseText this)) body)))
     method body headers))
 
 (defn transit-get [url cb]

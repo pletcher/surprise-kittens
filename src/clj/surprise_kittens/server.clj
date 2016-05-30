@@ -34,18 +34,11 @@
      :headers {"Content-Type" "application/transit+json"}
      :body (write-str (parser req query) :json)}))
 
-(defn kitten-image []
-  {:status 200
-   :headers {"Content-Type" "application/transit+json"}
-   :body (write-str (kitten) :json)})
-
 (defroutes routes
   (GET "/" _
     {:status 200
      :headers {"Content-Type" "text/html; charset=utf-8"}
      :body (io/input-stream (io/resource "public/index.html"))})
-  (GET "/kittens/random" _
-    (kitten-image))
   (POST "/query" req
     (if-let [body (get req :body)]
       (handle-query req body)
