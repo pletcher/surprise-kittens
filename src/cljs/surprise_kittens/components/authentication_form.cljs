@@ -2,6 +2,8 @@
   (:require [om.dom :as dom]
             [om.next :as om :refer-macros [defui]]))
 
+(def fields [:email :password :username])
+
 (defn authenticate [c e]
   (let [st (om/get-state c)]
     (do
@@ -26,6 +28,7 @@
             (dom/div #js {:className "clearfix"}
               (dom/label #js {:className "left"} "email")
               (dom/input #js {:className "right rounded"
+                              :id "authentication-form-email"
                               :maxLength 254
                               :onChange #(set-field this :email %)
                               :type "email"
@@ -33,6 +36,7 @@
             (dom/div #js {:className "clearfix"}
               (dom/label #js {:className "left"} "username")
               (dom/input #js {:className "right rounded"
+                              :id "authentication-form-username"
                               :maxLength 20
                               :onChange #(set-field this :username %)
                               :type "text"
@@ -40,6 +44,7 @@
             (dom/div #js {:className "clearfix"}
               (dom/label #js {:className "left"} "password")
               (dom/input #js {:className "right rounded"
+                              :id "authentication-form-password"
                               :onChange #(set-field this :password %)
                               :type "password"
                               :value (or password "")}))

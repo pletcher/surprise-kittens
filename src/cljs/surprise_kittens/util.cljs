@@ -7,7 +7,12 @@
   (xhr/send url
     (fn [e]
       (this-as this
-        (cb (transit/read (om/reader) (.getResponseText this)) body)))
+        ;; this is going to break _real_ fast
+        (let [b (transit/read (om/reader) (.getResponseText this))
+              k (first (keys b))
+              ks (get-in b [k :keys])
+              r (get-in b [k :result])]
+          (cb {(first ks) r}) ks)))
     method body headers))
 
 (defn transit-get [url cb]

@@ -11,7 +11,7 @@
             [surprise-kittens.parser :as parser]
             [surprise-kittens.util :as util]))
 
-(if goog.DEBUG
+(when goog.DEBUG
   (enable-console-print!))
 
 (defonce app-state (atom {}))
@@ -32,7 +32,7 @@
           (dom/small nil "Made with <3 for S."))))))
 
 (defn send-query
-  [{:keys [remote]} cb]
+  [{:keys [remote] :as env} cb]
   (util/transit-post "/query" remote cb))
 
 (def reconciler-cfg

@@ -53,16 +53,15 @@
 (defmethod read :current-user
   [{:keys [state] :as env} k _]
   (let [st @state]
-    {:value (if-let [user (get-in st ['user/authenticate :result])]
+    {:value (if-let [user (get st k)]
               (assoc user :logged-in true)
               (get st k {:logged-in false}))}))
 
 (defmethod read :kitten
   [{:keys [query state] :as env} k _]
   (let [st @state]
-    {:value (get-in st ['kitten/change :result]
-              (get st k
-                {:id :temp
-                 :hearted false
-                 :link "img/cat-1209743_1920.jpg"
-                 :loading false}))}))
+    {:value (get st k
+              {:id :temp
+               :hearted false
+               :link "img/cat-1209743_1920.jpg"
+               :loading false})}))

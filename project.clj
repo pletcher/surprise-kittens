@@ -20,6 +20,7 @@
                  [ragtime "0.5.3"]
                  [ring "1.4.0"]
                  [ring.middleware.logger "0.5.0"]
+                 [ring/ring-codec "1.0.1"]
                  [ring/ring-defaults "0.2.0"]
                  [yesql "0.5.2"]]
   :plugins [[lein-cljsbuild "1.1.3"]
